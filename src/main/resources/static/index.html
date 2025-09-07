@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Real-time chat application with secure messaging">
+    <meta name="keywords" content="chat, messaging, real-time, communication">
+    <title>ChatApp - Connect & Communicate</title>
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="/css/base.css" as="style">
+    <link rel="preload" href="/css/components.css" as="style">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/responsive.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+</head>
+<body class="landing-page">
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1>ChatApp</h1>
+                </div>
+                <nav class="nav">
+                    <a href="/login.html" class="btn btn-outline">Login</a>
+                    <a href="/register.html" class="btn btn-primary">Get Started</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <main class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h2 class="hero-title">Connect with Friends in Real-Time</h2>
+                <p class="hero-description">
+                    Experience seamless communication with our modern chat platform. 
+                    Join conversations, share moments, and stay connected with people who matter.
+                </p>
+                <div class="hero-actions">
+                    <a href="/register.html" class="btn btn-primary btn-large">Start Chatting</a>
+                    <a href="/login.html" class="btn btn-outline btn-large">Sign In</a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="chat-preview">
+                    <div class="chat-bubble chat-bubble-sent">
+                        <p>Hey! How are you doing?</p>
+                        <span class="timestamp">2:30 PM</span>
+                    </div>
+                    <div class="chat-bubble chat-bubble-received">
+                        <p>Great! Just finished my project 🎉</p>
+                        <span class="timestamp">2:32 PM</span>
+                    </div>
+                    <div class="chat-bubble chat-bubble-sent">
+                        <p>Awesome! Let's celebrate!</p>
+                        <span class="timestamp">2:33 PM</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="container">
+            <h3 class="section-title">Why Choose ChatApp?</h3>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">💬</div>
+                    <h4>Real-time Messaging</h4>
+                    <p>Instant message delivery with WebSocket technology</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h4>Secure & Private</h4>
+                    <p>End-to-end encryption keeps your conversations safe</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <h4>Cross-Platform</h4>
+                    <p>Works seamlessly on desktop, tablet, and mobile devices</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 ChatApp. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="loading-spinner"></div>
+        <p>Loading...</p>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/js/utils/api.js"></script>
+    <script src="/js/utils/storage.js"></script>
+    <script src="/js/components/loading.js"></script>
+    <script src="/js/pages/landing.js"></script>
+</body>
+</html>

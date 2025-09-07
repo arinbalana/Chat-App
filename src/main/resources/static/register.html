@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Create your ChatApp account - Join the conversation">
+    <title>Register - ChatApp</title>
+    
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/forms.css">
+    <link rel="stylesheet" href="/css/responsive.css">
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+</head>
+<body class="auth-page">
+    <!-- Header -->
+    <header class="header header-minimal">
+        <div class="container">
+            <div class="header-content">
+                <a href="/" class="logo">
+                    <h1>ChatApp</h1>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="auth-main">
+        <div class="container">
+            <div class="auth-container">
+                <div class="auth-card">
+                    <div class="auth-header">
+                        <h2>Create Account</h2>
+                        <p>Join thousands of users in meaningful conversations</p>
+                    </div>
+
+                    <form id="registerForm" class="auth-form">
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <input 
+                                type="text" 
+                                id="username" 
+                                name="username" 
+                                required 
+                                autocomplete="username"
+                                placeholder="Choose a unique username"
+                                minlength="3"
+                                maxlength="50"
+                            >
+                            <span class="form-error" id="usernameError"></span>
+                            <span class="form-help">3-50 characters, letters and numbers only</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input 
+                                type="email" 
+                                id="email" 
+                                name="email" 
+                                required 
+                                autocomplete="email"
+                                placeholder="Enter your email address"
+                            >
+                            <span class="form-error" id="emailError"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <div class="password-input">
+                                <input 
+                                    type="password" 
+                                    id="password" 
+                                    name="password" 
+                                    required 
+                                    autocomplete="new-password"
+                                    placeholder="Create a strong password"
+                                    minlength="6"
+                                >
+                                <button type="button" class="password-toggle" id="passwordToggle">
+                                    <span class="toggle-icon">👁️</span>
+                                </button>
+                            </div>
+                            <span class="form-error" id="passwordError"></span>
+                            <span class="form-help">Minimum 6 characters</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirm Password</label>
+                            <div class="password-input">
+                                <input 
+                                    type="password" 
+                                    id="confirmPassword" 
+                                    name="confirmPassword" 
+                                    required 
+                                    autocomplete="new-password"
+                                    placeholder="Confirm your password"
+                                >
+                                <button type="button" class="password-toggle" id="confirmPasswordToggle">
+                                    <span class="toggle-icon">👁️</span>
+                                </button>
+                            </div>
+                            <span class="form-error" id="confirmPasswordError"></span>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary btn-full" id="registerBtn">
+                                <span class="btn-text">Create Account</span>
+                                <span class="btn-spinner hidden"></span>
+                            </button>
+                        </div>
+
+                        <div class="form-footer">
+                            <p>Already have an account? <a href="/login.html">Sign in</a></p>
+                        </div>
+                    </form>
+
+                    <!-- Alert Messages -->
+                    <div id="alertContainer" class="alert-container"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="loading-spinner"></div>
+        <p>Creating your account...</p>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/js/utils/api.js"></script>
+    <script src="/js/utils/storage.js"></script>
+    <script src="/js/utils/validation.js"></script>
+    <script src="/js/components/loading.js"></script>
+    <script src="/js/components/alerts.js"></script>
+    <script src="/js/pages/register.js"></script>
+</body>
+</html>
