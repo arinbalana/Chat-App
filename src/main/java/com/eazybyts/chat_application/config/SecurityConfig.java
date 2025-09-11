@@ -38,6 +38,7 @@ public class SecurityConfig {
             .requestMatchers("/", "/index.html", "/login.html", "/register.html", "/chat.html").permitAll()
             .requestMatchers("/css/**", "/js/**", "/images/**", "/assets/**").permitAll()
             .requestMatchers("/favicon.ico").permitAll()
+            .requestMatchers("/error").permitAll()
             .anyRequest().authenticated()
         );
 
