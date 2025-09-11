@@ -433,10 +433,21 @@ class ChatPage {
         }
     }
 
+        return messageDiv;
+    }
+
     /**
      * Handle incoming message
      */
     handleIncomingMessage(message, type) {
+        // Handle private messages
+        if (message.receiver && (message.receiver === this.currentUser.username || message.sender === this.currentUser.username)) {
+            this.addPrivateMessageToUI(message);
+            this.playNotificationSound(message);
+            this.showDesktopNotification(message);
+            return;
+        }
+        
         // Add message to current room messages
         const roomMessages = this.messages.get(this.currentRoom) || [];
         roomMessages.push(message);
@@ -662,13 +673,157 @@ class ChatPage {
         // Add click handler for private messaging (future feature)
         userDiv.addEventListener('click', () => {
             if (user.username !== this.currentUser.username) {
-                window.showInfo(`Private messaging with ${user.username} coming soon!`);
+                this.startPrivateChat(user.username);
             }
         });
 
         return userDiv;
     }
 
+    /**
+     * Start private chat with user
+     */
+    startPrivateChat(username) {
+        // Create or show private chat modal
+        const modal = this.createPrivateChatModal(username);
+        window.showModal(modal.id);
+    }
+
+    /**
+     * Create private chat modal
+     */
+    createPrivateChatModal(username) {
+        const modalId = `privateChat_${username}`;
+        let modal = document.getElementById(modalId);
+        
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = modalId;
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal private-chat-modal">
+                    <div class="modal-header">
+                        <h3>Chat with ${username}</h3>
+                        <button class="modal-close" data-modal="${modalId}">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="private-messages" id="privateMessages_${username}">
+                            <!-- Private messages will be loaded here -->
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="private-message-input">
+                            <input type="text" 
+                                   id="privateInput_${username}" 
+                                   placeholder="Type a private message..."
+                                   maxlength="1000">
+                            <button class="btn btn-primary" 
+                                    onclick="chatPage.sendPrivateMessage('${username}')">
+                                Send
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            // Setup private message input
+            const input = document.getElementById(`privateInput_${username}`);
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    this.sendPrivateMessage(username);
+                }
+            });
+            
+            // Load existing private messages
+            this.loadPrivateMessages(username);
+        }
+        
+        return modal;
+    }
+
+    /**
+     * Send private message
+     */
+    sendPrivateMessage(receiver) {
+        const input = document.getElementById(`privateInput_${receiver}`);
+        if (!input) return;
+        
+        const content = input.value.trim();
+        if (!content) return;
+        
+        // Send via WebSocket
+        window.wsUtils.sendPrivateMessage(content, receiver);
+        
+        // Clear input
+        input.value = '';
+        
+        // Add message to UI immediately
+        this.addPrivateMessageToUI({
+            content,
+            sender: this.currentUser.username,
+            receiver,
+            timestamp: new Date().toISOString(),
+            type: 'CHAT'
+        });
+    }
+
+    /**
+     * Load private messages
+     */
+    async loadPrivateMessages(username) {
+        try {
+            const messages = await window.api.getPrivateMessages(this.currentUser.username, username);
+            const container = document.getElementById(`privateMessages_${username}`);
+            
+            if (container) {
+                container.innerHTML = '';
+                messages.forEach(message => {
+                    this.addPrivateMessageToUI(message);
+                });
+            }
+        } catch (error) {
+            console.error('Error loading private messages:', error);
+        }
+    }
+
+    /**
+     * Add private message to UI
+     */
+    addPrivateMessageToUI(message) {
+        const container = document.getElementById(`privateMessages_${message.receiver === this.currentUser.username ? message.sender : message.receiver}`);
+        if (!container) return;
+        
+        const messageElement = this.createPrivateMessageElement(message);
+        container.appendChild(messageElement);
+        container.scrollTop = container.scrollHeight;
+    }
+
+    /**
+     * Create private message element
+     */
+    createPrivateMessageElement(message) {
+        const messageDiv = document.createElement('div');
+        const isOwnMessage = message.sender === this.currentUser.username;
+        
+        messageDiv.className = `private-message ${isOwnMessage ? 'own' : ''}`;
+        
+        const timestamp = new Date(message.timestamp).toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+
+        messageDiv.innerHTML = `
+            <div class="message-content">
+                <div class="message-header">
+                    <span class="message-sender">${message.sender}</span>
+                    <span class="message-time">${timestamp}</span>
+                </div>
+                <div class="message-bubble">
+                    <p class="message-text">${this.escapeHtml(message.content)}</p>
+                </div>
+            </div>
+        `;
     /**
      * Get avatar text (first letter of username)
      */
@@ -904,7 +1059,7 @@ class ChatPage {
 
 // Initialize chat page
 document.addEventListener('DOMContentLoaded', () => {
-    new ChatPage();
+    window.chatPage = new ChatPage();
 });
 
 // Handle page visibility change

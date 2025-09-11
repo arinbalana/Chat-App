@@ -67,9 +67,18 @@ class ApiClient {
                 throw error;
             }
             
+            // Check if it's a network error
+            if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                throw new ApiError(
+                    'Network error - please check your connection',
+                    0,
+                    { originalError: error.message, isNetworkError: true }
+                );
+            }
+            
             // Network or other errors
             throw new ApiError(
-                'Network error or server unavailable',
+                error.message || 'Network error or server unavailable',
                 0,
                 { originalError: error.message }
             );

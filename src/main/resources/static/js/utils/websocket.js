@@ -3,6 +3,19 @@
  * Handles WebSocket connections for real-time chat functionality
  */
 
+// Load SockJS and Stomp libraries if not already loaded
+if (typeof SockJS === 'undefined') {
+    const sockjsScript = document.createElement('script');
+    sockjsScript.src = 'https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js';
+    document.head.appendChild(sockjsScript);
+}
+
+if (typeof Stomp === 'undefined') {
+    const stompScript = document.createElement('script');
+    stompScript.src = 'https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js';
+    document.head.appendChild(stompScript);
+}
+
 class WebSocketManager {
     constructor() {
         this.socket = null;
@@ -33,21 +46,39 @@ class WebSocketManager {
     async connect(username) {
         if (this.isConnected) {
             console.log('Already connected to WebSocket');
-            return;
+            return true;
         }
 
         try {
+            // Wait for libraries to load
+            await this.waitForLibraries();
+            
             // Use SockJS for better compatibility
             const socketUrl = `${window.location.origin}/ws`;
             this.socket = new SockJS(socketUrl);
-            this.stompClient = Stomp.over(this.socket);
+            
+            // Handle different Stomp library versions
+            if (typeof Stomp !== 'undefined' && Stomp.over) {
+                this.stompClient = Stomp.over(this.socket);
+            } else if (typeof StompJs !== 'undefined') {
+                this.stompClient = new StompJs.Client({
+                    webSocketFactory: () => this.socket,
+                    reconnectDelay: 5000,
+                    heartbeatIncoming: 4000,
+                    heartbeatOutgoing: 4000,
+                });
+            } else {
+                throw new Error('Stomp library not available');
+            }
             
             // Disable debug logging in production
-            this.stompClient.debug = (str) => {
-                if (window.location.hostname === 'localhost') {
-                    console.log(str);
-                }
-            };
+            if (this.stompClient.debug) {
+                this.stompClient.debug = (str) => {
+                    if (window.location.hostname === 'localhost') {
+                        console.log(str);
+                    }
+                };
+            }
 
             // Connection headers
             const headers = {};
@@ -104,6 +135,25 @@ class WebSocketManager {
             console.error('Failed to create WebSocket connection:', error);
             throw error;
         }
+    }
+
+    /**
+     * Wait for required libraries to load
+     */
+    async waitForLibraries() {
+        let attempts = 0;
+        const maxAttempts = 50;
+        
+        while (attempts < maxAttempts) {
+            if ((typeof SockJS !== 'undefined') && 
+                (typeof Stomp !== 'undefined' || typeof StompJs !== 'undefined')) {
+                return;
+            }
+            await new Promise(resolve => setTimeout(resolve, 100));
+            attempts++;
+        }
+        
+        throw new Error('Required WebSocket libraries failed to load');
     }
 
     /**
@@ -471,6 +521,13 @@ window.wsUtils = {
      * Send a chat message
      */
     sendMessage(content, receiver = null) {
+        wsManager.sendChatMessage(content, 'CHAT', receiver);
+    },
+
+    /**
+     * Send private message
+     */
+    sendPrivateMessage(content, receiver) {
         wsManager.sendChatMessage(content, 'CHAT', receiver);
     },
 
