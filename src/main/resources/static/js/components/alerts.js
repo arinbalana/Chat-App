@@ -427,6 +427,11 @@ const alertStyles = `
     z-index: 1060;
     max-width: 400px;
     width: 100%;
+    pointer-events: none;
+}
+
+.alert-container .alert {
+    pointer-events: auto;
 }
 
 .alert {

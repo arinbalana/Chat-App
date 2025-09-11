@@ -390,11 +390,15 @@ class RegisterPage {
                 }
             } else if (error.status === 400) {
                 errorMessage = 'Please check your input and try again.';
+            } else if (error.status === 0) {
+                errorMessage = 'Cannot connect to server. Please check your connection.';
             } else if (error.data && error.data.message) {
                 errorMessage = error.data.message;
             }
-        } else if (error.isNetworkError && error.isNetworkError()) {
+        } else if (error.data && error.data.isNetworkError) {
             errorMessage = 'Network error. Please check your connection.';
+        } else if (error.name === 'TypeError') {
+            errorMessage = 'Network error. Please check your connection and try again.';
         }
 
         // Show error message
